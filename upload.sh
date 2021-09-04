@@ -22,18 +22,25 @@ else
         VERSION="$1"
     fi
 fi
-IMAGE_NAME="ghcr.io/$GH_USERNAME/kube-playground:$VERSION"
-docker build . -t $IMAGE_NAME &> /dev/null
+IMAGE_NAME="ghcr.io/$GH_USERNAME/kube-playground"
+IMAGE_NAME_VERSIONED="$IMAGE_NAME:$VERSION"
+IMAGE_NAME_LATEST="$IMAGE_NAME:latest"
+docker build . -t $IMAGE_NAME_VERSIONED -t $IMAGE_NAME_LATEST &> /dev/null
 if [[ $? -ne 0 ]]; then
     echo "Could not build image"
     exit 1
 else
     echo "Built image"
 fi
-docker push $IMAGE_NAME &> /dev/null
-if [[ $? -ne 0 ]]; then
-    echo "Could not push image"
-    exit 1
-else
-    echo "Finished uploading image"
-fi
+push() {
+    docker push "$1" &> /dev/null
+    if [[ $? -ne 0 ]]; then
+        echo "Could not push image: $1"
+        exit 1
+    else
+        echo "Finished uploading image: $1"
+    fi
+}
+push $IMAGE_NAME_VERSIONED
+push $IMAGE_NAME_LATEST
+echo "Finished pushing images"

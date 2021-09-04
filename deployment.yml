@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-server-deployment
+  labels:
+    app: python-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: python-server
+  template:
+    metadata:
+      labels:
+        app: python-server
+    spec:
+      containers:
+      - name: web-server
+        image: ghcr.io/yodasoda1219/kube-playground:latest
+        ports:
+        - containerPort: 8080
